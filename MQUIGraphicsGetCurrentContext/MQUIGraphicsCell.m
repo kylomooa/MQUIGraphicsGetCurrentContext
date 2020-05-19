@@ -6,6 +6,8 @@
 //  Copyright © 2020 maoqiang. All rights reserved.
 //
 
+//参考博客说明:https://www.jianshu.com/p/d46bcc656e04
+
 #import "MQUIGraphicsCell.h"
 
 @implementation MQUIGraphicsCell
@@ -13,8 +15,24 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         self.backgroundColor = [UIColor whiteColor];
+        
+        //直接调用setNeedsDisplay或者setNeedsDisplayInRect:会触发drawRect
+        //frame的size不能为0
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self setNeedsDisplay];
+            NSLog(@"setNeedsDisplay");
+        });
+        
+        //setNeedsLayout或者layoutIfNeed，会触发layoutSubviews
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self setNeedsLayout];
+        });
     }
     return self;
+}
+
+-(void)layoutSubviews{
+    NSLog(@"layoutSubviews");
 }
 
 
@@ -30,6 +48,8 @@
 }
 
 -(void)drawRect:(CGRect)rect{
+    
+    NSLog(@"drawRect");
     
     [self drawArcInRect:rect];
 
