@@ -55,17 +55,23 @@
 
     [self drawSepLine:rect];
     
-    [self drawShadowLine:rect];
+    
+    //CGContextSaveGState与CGContextRestoreGState配合使用，防止阴影效果影响后面的绘制
+    CGContextRef contextRef = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(contextRef);//保存绘图上下文状态
+    [self drawShadow:rect];
+    CGContextRestoreGState(contextRef);//还原绘图上下文状态
 
+    [self drawCircle:rect];
 }
 
-//画圆角
+//画矩形圆角
 -(void)drawArcInRect:(CGRect)rect{
     
     // 1.获取上下文
     CGContextRef contextRef = UIGraphicsGetCurrentContext();
     
-    //2.画圆角
+    // 2.画矩形圆角
     UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(10, 10, [UIScreen mainScreen].bounds.size.width-20, 80) cornerRadius:10];
     CGContextAddPath(contextRef, bezierPath.CGPath);
     
@@ -96,19 +102,32 @@
 
 
 //画阴影
--(void)drawShadowLine:(CGRect)rect{
+-(void)drawShadow:(CGRect)rect{
     // 1.获取上下文
     CGContextRef contextRef = UIGraphicsGetCurrentContext();
     
-    //2.画圆角
+    // 2.画圆角
     UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(10, 10, [UIScreen mainScreen].bounds.size.width-20, 80) cornerRadius:10];
     CGContextAddPath(contextRef, bezierPath.CGPath);
     
-    //3.添加阴影
+    // 3.添加阴影
     CGContextSetShadowWithColor(contextRef, CGSizeMake(4, 4), 0, [UIColor grayColor].CGColor);
     
-    //4.渲染填充区域
+    // 4.渲染填充区域
     CGContextFillPath(contextRef);
+}
+
+-(void)drawCircle:(CGRect)rect{
+    CGContextRef contextRef = UIGraphicsGetCurrentContext();
+    
+    //画圆
+    UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(40, 40, 20, 20) cornerRadius:10];
+    CGContextAddPath(contextRef, bezierPath.CGPath);
+
+    CGContextSetLineWidth(contextRef, 4);
+    CGContextSetStrokeColorWithColor(contextRef, [UIColor blackColor].CGColor);
+    
+    CGContextStrokePath(contextRef);
 }
 
 @end
